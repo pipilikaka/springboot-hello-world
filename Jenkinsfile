@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = 'your-dockerhub-username/springboot-hello-world'
+        DOCKER_IMAGE = 'pipilikaka/springboot-hello-world'
         VERSION = "v1.${BUILD_NUMBER}"
         CONTAINER_NAME = "hello-world-app"
     }
@@ -41,7 +41,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKERHUB_TOKEN')]) {
                     sh '''
-                        echo "$DOCKERHUB_TOKEN" | docker login -u your-dockerhub-username --password-stdin
+                        echo "$DOCKERHUB_TOKEN" | docker login -u pipilikaka --password-stdin
                         docker push $DOCKER_IMAGE:$VERSION
                     '''
                 }
@@ -53,7 +53,7 @@ pipeline {
                 sh '''
                     docker stop $CONTAINER_NAME || true
                     docker rm $CONTAINER_NAME || true
-                    docker run -d --name $CONTAINER_NAME -p 8080:8080 $DOCKER_IMAGE:$VERSION
+                    docker run -d --name $CONTAINER_NAME -p 8081:8080 $DOCKER_IMAGE:$VERSION
                 '''
             }
         }
@@ -67,7 +67,7 @@ pipeline {
 
     post {
         success {
-            echo "Deployed and running at http://<JENKINS-HOST>:8080"
+            echo "Deployed and running at http://<JENKINS-HOST>:8081"
         }
         failure {
             echo "Pipeline failed during one of the steps."
